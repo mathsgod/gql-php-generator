@@ -1,0 +1,19 @@
+{
+    "name": "mathsgod/gql-php-generator",
+    "description": "A library used for generator gql file by input pdo",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Raymond Chong",
+            "email": "mathsgod@yahoo.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "GQL\\": "src"
+        }
+    }
+}
