@@ -77,7 +77,7 @@ class Generator
             if ($column["Key"] == "PRI") continue;
             $str .= "\t\t" . $column["Field"] . ":" . $this->getDataType($column["Type"]) . $this->getNotNull($column) . "\n";
         }
-        $str .= "\t)\n";
+        $str .= "\t):Boolean\n";
 
         return $str;
     }
@@ -88,7 +88,7 @@ class Generator
         foreach ($this->info[$table] as $column) {
             $str .= "\t\t" . $column["Field"] . ":" . $this->getDataType($column["Type"]) . $this->getNotNull($column) . "\n";
         }
-        $str .= "\t)\n";
+        $str .= "\t):Boolean\n";
 
         //del
         $str = "\tdelete$table(";
@@ -99,7 +99,7 @@ class Generator
         }
         $str .= implode(",", $a);
 
-        $str .= ")\n";
+        $str .= "):Boolean\n";
 
 
         return $str;
