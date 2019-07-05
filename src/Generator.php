@@ -77,7 +77,7 @@ class Generator
             if ($column["Key"] == "PRI") continue;
             $str .= "\t\t" . $column["Field"] . ":" . $this->getDataType($column["Type"]) . $this->getNotNull($column) . "\n";
         }
-        $str .= "\t):Boolean\n";
+        $str .= "\t):$table\n";
 
         return $str;
     }
