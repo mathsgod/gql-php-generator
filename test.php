@@ -9,6 +9,6 @@ $pdo = new PDO("mysql:dbname=raymond;host=127.0.0.1;", "root", "111111", [
 ]);
 
 
-$pdo = new GQL\Generator($pdo);
+$g = new GQL\Generator($pdo);
 
-echo $pdo->output();
+echo $g->output();

@@ -78,7 +78,7 @@ class Generator
 
             if ($info["Key"] == "PRI") {
                 foreach ($this->findAllField($info["Field"]) as $t) {
-                    $str .= "\t" . $t . "s:[$t]\n";
+                    $str .= "\t" . $t . ":[$t]\n";
                 }
             } else {
                 if ($t = $this->findTableByPri($info["Field"])) {
