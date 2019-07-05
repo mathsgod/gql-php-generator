@@ -34,6 +34,12 @@ class Generator
     {
         $ret = "";
 
+        $ret = "schema {
+    query:Query
+    subscription:Subscription
+    mutation:Mutation
+}\n\n";
+
         $ret .= "type query{\n";
         foreach ($this->table as $t) {
             $pri_key = $this->getTablePriKey($t);
@@ -44,10 +50,59 @@ class Generator
         }
         $ret .= "}\n\n";
 
+
+        $ret .= "type subscription{\n";
+        foreach ($this->table as $table) {
+            $ret .= $this->getSubscription($table);
+        }
+        $ret .= "}\n\n";
+
+        $ret .= "type mutation{\n";
+        foreach ($this->table as $table) {
+            $ret .= $this->getMutation($table);
+        }
+        $ret .= "}\n\n";
+
+
         foreach ($this->table as $table) {
             $ret .= $this->getType($table);
         }
         return $ret;
+    }
+
+    public function getSubscription(string $table): string
+    {
+        $str = "\tcreate$table(\n";
+        foreach ($this->info[$table] as $column) {
+            if ($column["Key"] == "PRI") continue;
+            $str .= "\t\t" . $column["Field"] . ":" . $this->getDataType($column["Type"]) . $this->getNotNull($column) . "\n";
+        }
+        $str .= "\t)\n";
+
+        return $str;
+    }
+
+    public function getMutation(string $table): string
+    {
+        $str = "\tupdate$table(\n";
+        foreach ($this->info[$table] as $column) {
+            $str .= "\t\t" . $column["Field"] . ":" . $this->getDataType($column["Type"]) . $this->getNotNull($column) . "\n";
+        }
+        $str .= "\t)\n";
+
+        //del
+        $str = "\tdelete$table(";
+        $a = [];
+        foreach ($this->info[$table] as $column) {
+            if ($column["Key"] != "PRI") continue;
+            $a[] = $column["Field"] . ":" . $this->getDataType($column["Type"]) . $this->getNotNull($column);
+        }
+        $str .= implode(",", $a);
+
+        $str .= ")\n";
+
+
+        return $str;
     }
 
 
@@ -78,7 +133,7 @@ class Generator
 
             if ($info["Key"] == "PRI") {
                 foreach ($this->findAllField($info["Field"]) as $t) {
-                    $str .= "\t" . $t . ":[$t]\n";
+                    $str .= "\t" . $t . ":[$t!]!\n";
                 }
             } else {
                 if ($t = $this->findTableByPri($info["Field"])) {
@@ -93,7 +148,19 @@ class Generator
 
     public function findTableByPri(string $field): string
     {
+
         foreach ($this->info as $table => $info) {
+            $key_size = 0;
+            foreach ($info as $inf) {
+                if ($inf["Key"] == "PRI") {
+                    $key_size++;
+                }
+            }
+
+            if ($key_size != 1) {
+                continue;
+            }
+
             foreach ($info as $inf) {
                 if ($inf["Key"] == "PRI" && $inf["Field"] == $field) {
                     return $table;
